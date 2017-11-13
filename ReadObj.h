@@ -32,19 +32,28 @@ class Model {
 public:
 	/*
 	Construct a Model object using the data provided in the .obj file passed
-	as a string containing its full name
+	as a string containing its full name, and the x/y/z coordinates
+	of its pivot point
 	*/
-	Model(string objSource);
+	Model(string objSource, 
+		float _x, float _y, float _z,
+		vector<string> children);
 	/*
 	Pass an array with 3 integers from 0 to 255 to specify the color in
 	RGB order (colorArray[0] for red, [1] for blue, [2] for green)
 	*/
 	void drawNonTextured(int colorArray[3]);
 	void doNorms(bool veracity);
-private:
+	void rotateModel(float x, float y, float z);
+	void moveModel(float x, float y, float z);
+	string name;
+	vector<string> childNames;
+	vector<Model*> children;
 	vector<Face> modelFaces;
 	vector<vector<double>> modelVertices;
 	vector<vector<double>> normVectors;
 	vector<vector<double>> textureCoords;
 	bool drawNormals;
+	//x, y, and z store the position of the pivot point in the model
+	float x, y, z, rotX, rotY, rotZ;
 };

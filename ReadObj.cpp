@@ -2,7 +2,15 @@
 /**
 Model class functions
 **/
-Model::Model(string objSource) {
+Model::Model(string objSource, 
+	float _x, float _y, float _z, 
+	vector<string> children) {
+	childNames = children;
+	name = objSource.substr(0, objSource.length() - 4);
+	rotX = rotY = rotZ = 0;
+	x = _x;
+	y = _y;
+	z = _z;
 	drawNormals = false;
 	ifstream source;
 	source.open(objSource, ios::in);
@@ -132,4 +140,16 @@ void Model::drawNonTextured(int colorArray[3]) {
 //normal vectors on the model
 void Model::doNorms(bool veracity) {
 	drawNormals = veracity;
+}
+
+void Model::rotateModel(float x, float y, float z) {
+	rotX = x;
+	rotY = y;
+	rotZ = z;
+}
+
+void Model::moveModel(float _x, float _y, float _z) {
+	x += _x;
+	y += _y;
+	z += _z;
 }
