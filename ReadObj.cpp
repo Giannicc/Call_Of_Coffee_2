@@ -8,9 +8,9 @@ Model::Model(string objSource,
 	childNames = children;
 	name = objSource.substr(0, objSource.length() - 4);
 	rotX = rotY = rotZ = 0;
-	x = _x;
-	y = _y;
-	z = _z;
+	pivotX = _x;
+	pivotY = _y;
+	pivotZ = _z;
 	drawNormals = false;
 	ifstream source;
 	source.open(objSource, ios::in);

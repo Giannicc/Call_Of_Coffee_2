@@ -15,7 +15,7 @@ texture tutorial
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <glut/GLUT.H>
+#include <GLUT/GLUT.H>
 using namespace std;
 
 /*
@@ -54,6 +54,7 @@ public:
 	vector<vector<double>> normVectors;
 	vector<vector<double>> textureCoords;
 	bool drawNormals;
-	//x, y, and z store the position of the pivot point in the model
-	float x, y, z, rotX, rotY, rotZ;
+	//pivotX, pivotY, and pivotZ store the position of the pivot point in the model
+	//while x, y, and z store the corresponding offset for moving that part of the model specifically
+	float pivotX, pivotY, pivotZ, x = 0, y = 0, z = 0, rotX, rotY, rotZ;
 };
