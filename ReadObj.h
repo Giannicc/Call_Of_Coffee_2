@@ -15,7 +15,7 @@ texture tutorial
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <glut/GLUT.H>
+#include <GLUT/GLUT.H>
 using namespace std;
 
 /*
