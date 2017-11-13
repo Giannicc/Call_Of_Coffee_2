@@ -26,7 +26,7 @@ void Rig::drawRig() {
 	};
 	glPushMatrix();
 	//the model at pos 0 in modelParts is the root
-	glTranslatef(modelParts[0].x, modelParts[0].y, modelParts[0].z);
+	glTranslatef(modelParts[0].pivotX, modelParts[0].pivotY, modelParts[0].pivotZ);
 	glRotatef(modelParts[0].rotX, 1.0, 0.0, 0.0);
 	glRotatef(modelParts[0].rotY, 0.0, 1.0, 0.0);
 	glRotatef(modelParts[0].rotZ, 0.0, 0.0, 1.0);
@@ -46,16 +46,16 @@ void Rig::recursiveDraw(deque<Model*> childModels) {
 		};
 		glPushMatrix();
 		glTranslatef(
-			(*childModels.front()).x,
-			(*childModels.front()).y,
-			(*childModels.front()).z);
+			(*childModels.front()).pivotX + (*childModels.front()).x,
+			(*childModels.front()).pivotY + (*childModels.front()).y,
+			(*childModels.front()).pivotZ + (*childModels.front()).z);
 		glRotatef((*childModels.front()).rotX, 1.0, 0.0, 0.0);
 		glRotatef((*childModels.front()).rotY, 0.0, 1.0, 0.0);
 		glRotatef((*childModels.front()).rotZ, 0.0, 0.0, 1.0);
 		glTranslatef(
-			-(*childModels.front()).x,
-			-(*childModels.front()).y,
-			-(*childModels.front()).z);
+			-(*childModels.front()).pivotX,
+			-(*childModels.front()).pivotY,
+			-(*childModels.front()).pivotZ);
 		(*childModels.front()).drawNonTextured(colorArray);		
 		Model *placeHolder = childModels.front();
 		childModels.pop_front();
