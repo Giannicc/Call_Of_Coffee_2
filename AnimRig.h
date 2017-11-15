@@ -18,6 +18,11 @@ public:
 /*
 Subclass for the cultist rig, will define animation here
 */
-class Cultist_0 : public Rig {
+class CultistRig_0 : public Rig {
+public:
+	CultistRig_0(vector<Model> submodels) : Rig(submodels) {
+
+	}
 	void doAnimate();
+	int animationStage = 0;
 };
