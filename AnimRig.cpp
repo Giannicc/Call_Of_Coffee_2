@@ -67,7 +67,7 @@ void Rig::recursiveDraw(deque<Model*> childModels) {
 	}
 }
 
-void Cultist_0::doAnimate() {
+void CultistRig_0::doAnimate() {
 	/*
 	mmkay so what I'm thinking for this one is:
 	1) check the animation state
@@ -81,4 +81,19 @@ void Cultist_0::doAnimate() {
 	4) otherwise just follow the animation instructions that move the model
 	to the desired spot every time the animate function is called
 	*/
+	Model *top = NULL, *hands = NULL;
+	for (int i = 0; i < modelParts.size(); i++) {
+		if (modelParts[i].name == "cultist_0") top = &(modelParts[i]);
+		if (modelParts[i].name == "cultist_0_hands") hands = &(modelParts[i]);
+	}
+	if ((*top).rotX > 45) animationStage = 1;
+	else if ((*top).rotX <= 1) animationStage = 0;
+	switch (animationStage) {
+	case 0:
+		(*top).rotX += 1;
+		break;
+	case 1:
+		(*top).rotX -= 1;
+		break;
+	}
 }

@@ -62,6 +62,14 @@ vector<Model> skelebones = {
 
 Rig mainRig(skelebones);
 
+Model cultist_0_bottom("cultist_0_bottom.obj", 0, 0, 0, { "cultist_0", "cultist_0_hands" });
+Model cultist_0_top("cultist_0.obj", 0, 1.49405, 0, {});
+Model cultist_0_hands("cultist_0_hands.obj", 0, 1.13319, 0, {});
+vector<Model> cultistVector = {
+	cultist_0_bottom, cultist_0_top, cultist_0_hands
+};
+CultistRig_0 cult_0Rig(cultistVector);
+
 //Global vars to store the angle of rotation of the model
 static GLfloat angle = 0;
 static GLfloat angle2 = 0;
@@ -69,9 +77,20 @@ static GLfloat angle2 = 0;
 //Motion variables for the mouse rotation capability
 static int moving = 0, startx = 0, starty = 0;
 
+void animate() {
+	cult_0Rig.doAnimate();
+	glutPostRedisplay();
+}
+
 void renderScene() {
+	/* Draw the test skeleton
 	skull.drawNonTextured(colorArray);
 	mainRig.drawRig();
+	*/
+	glPushMatrix();
+	glTranslatef(0, 2.0, 0);
+	cult_0Rig.drawRig();
+	glPopMatrix();
 }
 
 //Init function for more openGL stuff
@@ -154,10 +173,10 @@ void keyboard(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	case 'r':
-		//glutIdleFunc(animate);
+		glutIdleFunc(animate);
 		break;
 	case 's':
-		//glutIdleFunc(NULL);
+		glutIdleFunc(NULL);
 		break;
 	default:
 		break;
