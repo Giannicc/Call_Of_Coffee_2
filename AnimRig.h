@@ -15,11 +15,16 @@ public:
 	//as the root model!
 	vector<Model> modelParts;
 	void drawRig();
-	void recursiveDraw(deque<Model> childModels);
+	void recursiveDraw(deque<Model*> childModels);
+	/*
 	Rig & operator=(const Rig &original) {
-		modelParts = original.modelParts;
+		for (int i = 0; i < original.modelParts.size(); i++) {
+			Model newModel = original.modelParts[i];
+			modelParts.push_back(newModel);
+		}
 		return *this;
 	}
+	*/
 };
 
 /*

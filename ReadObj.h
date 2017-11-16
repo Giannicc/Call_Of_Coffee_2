@@ -79,7 +79,7 @@ public:
 	}
 	string name, textureFileName;
 	vector<string> childNames;
-	vector<Model> children;
+	vector<Model *> children;
 	vector<Face> modelFaces;
 	vector<vector<double>> modelVertices;
 	vector<vector<double>> normVectors;

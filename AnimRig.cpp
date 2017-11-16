@@ -11,8 +11,8 @@ Rig::Rig(vector<Model> submodels) {
 		for (int childIndex = 0; childIndex < modelParts[i].childNames.size(); childIndex++) {
 			for (int j = 0; j < modelParts.size(); j++) {
 				if (modelParts[j].name == modelParts[i].childNames[childIndex]) {
-					Model child = modelParts[j];
-					modelParts[i].children.push_back(child);
+					modelParts[i].children.push_back(&(modelParts[j]));
+					break;
 				}
 			}
 		}
@@ -27,33 +27,43 @@ void Rig::drawRig() {
 	glRotatef(modelParts[0].rotY, 0.0, 1.0, 0.0);
 	glRotatef(modelParts[0].rotZ, 0.0, 0.0, 1.0);
 	modelParts[0].drawTextured();
-	deque<Model> subModels;
+	deque<Model*> subModels;
+	for (int i = 1; i < modelParts.size(); i++) {
+		subModels.push_back(&modelParts[i]);
+	}
 	for (int i = 0; i < modelParts[0].children.size(); i++) {
+		//prevent re-adding of models
+		for (int j = 0; j < subModels.size(); j++) {
+			if ((*subModels[j]).name == (*modelParts[0].children[i]).name) {
+				subModels.erase(subModels.begin() + j);
+				break;
+			}
+		}
 		subModels.push_back(modelParts[0].children[i]);
 	}
 	recursiveDraw(subModels);
 	glPopMatrix();	//root pop
 }
 
-void Rig::recursiveDraw(deque<Model> subModels) {
+void Rig::recursiveDraw(deque<Model*> subModels) {
 	if (!subModels.empty()) {
 		int colorArray[] = {
 			255, 255, 255
 		};
 		glPushMatrix();
 		glTranslatef(
-			subModels.front().pivotX + subModels.front().x,
-			subModels.front().pivotY + subModels.front().y,
-			subModels.front().pivotZ + subModels.front().z);
-		glRotatef(subModels.front().rotX, 1.0, 0.0, 0.0);
-		glRotatef(subModels.front().rotY, 0.0, 1.0, 0.0);
-		glRotatef(subModels.front().rotZ, 0.0, 0.0, 1.0);
+			(*subModels.front()).pivotX + (*subModels.front()).x,
+			(*subModels.front()).pivotY + (*subModels.front()).y,
+			(*subModels.front()).pivotZ + (*subModels.front()).z);
+		glRotatef((*subModels.front()).rotX, 1.0, 0.0, 0.0);
+		glRotatef((*subModels.front()).rotY, 0.0, 1.0, 0.0);
+		glRotatef((*subModels.front()).rotZ, 0.0, 0.0, 1.0);
 		glTranslatef(
-			-subModels.front().pivotX,
-			-subModels.front().pivotY,
-			-subModels.front().pivotZ);
-		(subModels.front()).drawTextured();
-		Model placeHolder = subModels.front();
+			-(*subModels.front()).pivotX,
+			-(*subModels.front()).pivotY,
+			-(*subModels.front()).pivotZ);
+		(*subModels.front()).drawTextured();
+		Model placeHolder = (*subModels.front());
 		subModels.pop_front();
 		for (int i = 0; i < placeHolder.children.size(); i++) {
 			subModels.push_front(placeHolder.children[i]);
@@ -82,14 +92,14 @@ void CultistRig_0::doAnimate() {
 		if (modelParts[i].name == "cultist_0_robe_top") top = &(modelParts[i]);
 		if (modelParts[i].name == "cultist_0_hands") hands = &(modelParts[i]);
 	}
-	if ((*top).rotX > 45) animationStage = 1;
+	if ((*top).rotX > 40) animationStage = 1;
 	else if ((*top).rotX <= 1) animationStage = 0;
 	switch (animationStage) {
 	case 0:
-		(*top).rotX += 1;
+		(*top).rotX += .5;
 		break;
 	case 1:
-		(*top).rotX -= 1;
+		(*top).rotX -= .5;
 		break;
 	}
 }

@@ -7,7 +7,7 @@ Model::Model(string objSource,
 	vector<string> children) {
 	childNames = children;
 	name = objSource.substr(0, objSource.length() - 4);
-	textureFileName = name + ".png";
+	textureFileName = name + ".bmp";
 	rotX = rotY = rotZ = 0;
 	pivotX = _x;
 	pivotY = _y;
@@ -97,7 +97,7 @@ Model::Model(string objSource,
 	*/
 	if (!textureCoords.empty()) {
 		textureID = SOIL_load_OGL_texture(
-			"cultist_0_robe_top.bmp",
+			textureFileName.c_str(),
 			SOIL_LOAD_AUTO,
 			SOIL_CREATE_NEW_ID,
 			SOIL_FLAG_INVERT_Y
