@@ -14,6 +14,9 @@
 // -------- ROTATION VARS --------------
 float xpos = 0, ypos = 0, zpos = 0, xdir = 0, ydir = 0, zdir = -1, angle = 0;
 
+// -------- KEYPRESS VARS --------------
+float downmove = 0.0, downangle = 0.0;
+
 // -------- DELETE ME ------------------
 void drawSnowMan() {
 
@@ -76,10 +79,26 @@ void camera () {
 	      0, 1, 0);
 }
 
+void setpos(float downmove) {
+    xpos += downmove * xdir;
+    ypos += downmove * ydir;
+    zpos += downmove * zdir;
+}
+
+void setangle(float downangle) {
+    angle += downangle;
+    xdir = sin(angle);
+    zdir = -cos(angle);
+}
+
 void display (void) {
     glClearColor (0.0,0.0,0.0,1.0);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();  
+    glLoadIdentity();
+    if (downmove)
+	setpos(downmove);
+    if (downangle)
+	setangle(downangle);
     camera();
     renderScene();
     glutSwapBuffers();
@@ -93,31 +112,42 @@ void reshape (int w, int h) {
     glMatrixMode (GL_MODELVIEW);
 }
 
-void keyboard (unsigned char key, int x, int y) {
-    float rot_amount = 0.3f;
+void keyboard(unsigned char key, int x, int y) {
     switch (key) {
     case 'q':
 	exit(0);
 	break;
-    case 'a':
-	angle -= 0.01f;
-	xdir = sin(angle);
-	zdir = -cos(angle);
+    }
+}
+
+void keyboard_down (int key, int x, int y) {
+    switch (key) {
+    case GLUT_KEY_LEFT:
+	downangle = -0.02f;
 	break;
-    case 'd':
-	angle += 0.01f;
-	xdir = sin(angle);
-	zdir = -cos(angle);
+    case GLUT_KEY_RIGHT:
+	downangle = 0.02f;
 	break;
-    case 'w':
-	xpos += xdir * rot_amount;
-	ypos += ydir * rot_amount;
-	zpos += zdir * rot_amount;
+    case GLUT_KEY_UP:
+	downmove = 0.5f;
 	break;
-    case 's':
-	xpos -= xdir * rot_amount;
-	ypos -= ydir * rot_amount;
-	zpos -= zdir * rot_amount;
+    case GLUT_KEY_DOWN:
+	downmove = -0.5f;
+	break;
+    }
+}
+
+void keyboard_up (int key, int x, int y) {
+ switch (key) {
+    case GLUT_KEY_LEFT:
+
+    case GLUT_KEY_RIGHT:
+	downangle = 0.0f;
+	break;
+    case GLUT_KEY_UP:
+
+    case GLUT_KEY_DOWN:
+	downmove = 0.0f;
 	break;
     }
 }
@@ -131,8 +161,12 @@ int main (int argc, char **argv) {
     init ();
     glutDisplayFunc (display);
     glutIdleFunc (display);
-    glutReshapeFunc (reshape); 
-    glutKeyboardFunc (keyboard);
+    glutReshapeFunc (reshape);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(keyboard_down);
+    glutIgnoreKeyRepeat(1);
+    glutSpecialUpFunc(keyboard_up);
+    
     glutMainLoop ();
     return 0;
 } 
