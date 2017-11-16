@@ -19,7 +19,6 @@
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #else
-#include <GLUT/glut.h>
 #endif
 #include "AnimRig.h"
 using namespace std;
@@ -60,15 +59,8 @@ vector<Model> skelebones = {
 	leg_right_upper
 };
 
-Rig mainRig(skelebones);
-
-Model cultist_0_bottom("cultist_0_bottom.obj", 0, 0, 0, { "cultist_0", "cultist_0_hands" });
-Model cultist_0_top("cultist_0.obj", 0, 1.49405, 0, {});
-Model cultist_0_hands("cultist_0_hands.obj", 0, 1.13319, 0, {});
-vector<Model> cultistVector = {
-	cultist_0_bottom, cultist_0_top, cultist_0_hands
-};
-CultistRig_0 cult_0Rig(cultistVector);
+//Rig mainRig(skelebones);
+CultistRig_0 *cultist_0_rig;
 
 //Global vars to store the angle of rotation of the model
 static GLfloat angle = 0;
@@ -78,7 +70,7 @@ static GLfloat angle2 = 0;
 static int moving = 0, startx = 0, starty = 0;
 
 void animate() {
-	cult_0Rig.doAnimate();
+	(*cultist_0_rig).doAnimate();
 	glutPostRedisplay();
 }
 
@@ -89,8 +81,27 @@ void renderScene() {
 	*/
 	glPushMatrix();
 	glTranslatef(0, 2.0, 0);
-	cult_0Rig.drawRig();
+	(*cultist_0_rig).drawRig();
+	glPushMatrix();
+	glTranslatef(-2, 0, 0);
+	(*cultist_0_rig).drawRig();
 	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(2, 0, 0);
+	(*cultist_0_rig).drawRig();
+	glPopMatrix();
+	glPopMatrix();
+}
+
+void initializeModels() {
+	Model cultist_0_bottom("cultist_0_bottom.obj", 0, 0, 0, { "cultist_0_robe_top" });
+	Model cultist_0_top("cultist_0_robe_top.obj", 0, 1.49405, 0, {});
+	Model cultist_0_hands("cultist_0_hands.obj", 0, 1.13319, 0, {});
+	vector<Model> cultistVector = {
+		cultist_0_bottom, cultist_0_top, cultist_0_hands
+	};
+	CultistRig_0 *cult_0Rig = new CultistRig_0(cultistVector);
+	cultist_0_rig = cult_0Rig;
 }
 
 //Init function for more openGL stuff
@@ -109,7 +120,7 @@ void init()
 		8.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
+	initializeModels();
 	/* Setup initial OpenGL rendering state. */
 	glEnable(GL_DEPTH_TEST);
 	//glShadeModel(GL_SMOOTH);
@@ -165,7 +176,7 @@ static void mouse(int button, int state, int x, int y)
 //OpenGL keyboard input
 //	'q':  exit
 //	'r':  begin random rotation of skeleton limbs
-//	's':  stop random rotation of skeleton limbs
+//	'f':  stop random rotation of skeleton limbs
 void keyboard(unsigned char key, int x, int y) {
 #pragma unused(x, y)
 	switch (key) {
@@ -175,7 +186,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'r':
 		glutIdleFunc(animate);
 		break;
-	case 's':
+	case 'f':
 		glutIdleFunc(NULL);
 		break;
 	default:
