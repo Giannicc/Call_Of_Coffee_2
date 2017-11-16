@@ -6,21 +6,43 @@ Base Rig class
 */
 class Rig {
 public:
+	Rig() {
+
+	}
 	Rig(vector<Model> submodels);
 	//Store a vector of all submodels that comprise a whole rig
 	//NOTE:  whatever model is at position 0 in the vector will be used
 	//as the root model!
 	vector<Model> modelParts;
 	void drawRig();
-	void recursiveDraw(deque<Model*> childModels);
+	void recursiveDraw(deque<Model> childModels);
+	Rig & operator=(const Rig &original) {
+		modelParts = original.modelParts;
+		return *this;
+	}
 };
 
 /*
-Subclass for the cultist rig, will define animation here
+Subclass for the general cultist rig, will define animation here
 */
 class CultistRig_0 : public Rig {
 public:
+	CultistRig_0() {
+
+	}
 	CultistRig_0(vector<Model> submodels) : Rig(submodels) {
+
+	}
+	void doAnimate();
+	int animationStage = 0;
+};
+
+/*
+Subclass for the lead cultist
+*/
+class CultistRig_1 : public Rig {
+public:
+	CultistRig_1(vector<Model> submodels) : Rig(submodels) {
 
 	}
 	void doAnimate();

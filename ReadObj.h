@@ -16,6 +16,9 @@ texture tutorial
 #include <string>
 #include <sstream>
 #include <GLUT/GLUT.H>
+#include <SOIL.h>
+#include <math.h>
+
 using namespace std;
 
 /*
@@ -26,6 +29,12 @@ Model class
 class Face {
 public:
 	vector<int> faceVertexNums, faceNormNums, faceTexNums;
+	Face & operator=(const Face &original) {
+		faceVertexNums = original.faceVertexNums;
+		faceNormNums = original.faceNormNums;
+		faceTexNums = original.faceTexNums;
+		return *this;
+	}
 };
 
 class Model {
@@ -43,12 +52,34 @@ public:
 	RGB order (colorArray[0] for red, [1] for blue, [2] for green)
 	*/
 	void drawNonTextured(int colorArray[3]);
+	void drawTextured();
 	void doNorms(bool veracity);
 	void rotateModel(float x, float y, float z);
 	void moveModel(float x, float y, float z);
-	string name;
+	Model & operator=(const Model &original) {
+		name = original.name;
+		textureFileName = original.textureFileName;
+		childNames = original.childNames;
+		children = original.children;
+		modelFaces = original.modelFaces;
+		modelVertices = original.modelVertices;
+		normVectors = original.normVectors;
+		textureCoords = original.textureCoords;
+		pivotX = original.pivotX;
+		pivotY = original.pivotY;
+		pivotZ = original.pivotZ;
+		x = original.x;
+		y = original.y;
+		z = original.z;
+		rotX = original.rotX;
+		rotY = original.rotY;
+		rotZ = original.rotZ;
+		textureID = original.textureID;
+		return *this;
+	}
+	string name, textureFileName;
 	vector<string> childNames;
-	vector<Model*> children;
+	vector<Model> children;
 	vector<Face> modelFaces;
 	vector<vector<double>> modelVertices;
 	vector<vector<double>> normVectors;
@@ -57,4 +88,5 @@ public:
 	//pivotX, pivotY, and pivotZ store the position of the pivot point in the model
 	//while x, y, and z store the corresponding offset for moving that part of the model specifically
 	float pivotX, pivotY, pivotZ, x = 0, y = 0, z = 0, rotX, rotY, rotZ;
+	GLuint textureID;
 };

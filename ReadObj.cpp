@@ -7,6 +7,7 @@ Model::Model(string objSource,
 	vector<string> children) {
 	childNames = children;
 	name = objSource.substr(0, objSource.length() - 4);
+	textureFileName = name + ".png";
 	rotX = rotY = rotZ = 0;
 	pivotX = _x;
 	pivotY = _y;
@@ -91,6 +92,25 @@ Model::Model(string objSource,
 		exit(1);
 	}
 	source.close();
+	/*
+	SOIL image loading stuff
+	*/
+	if (!textureCoords.empty()) {
+		textureID = SOIL_load_OGL_texture(
+			"cultist_0_robe_top.bmp",
+			SOIL_LOAD_AUTO,
+			SOIL_CREATE_NEW_ID,
+			SOIL_FLAG_INVERT_Y
+		);
+		/* check for an error during the load process */
+		if (0 == textureID)
+		{
+			printf("SOIL loading error: '%s'\n", SOIL_last_result());
+		}
+		else {
+			cout << "o yea ah loaded properly an all" << endl;
+		}
+	}
 }
 
 void Model::drawNonTextured(int colorArray[3]) {
@@ -133,6 +153,40 @@ void Model::drawNonTextured(int colorArray[3]) {
 				verts[2] + norm[2]);
 			glEnd();
 		}
+	}
+}
+
+void Model::drawTextured() {
+	if (!textureCoords.empty()){
+		for (int i = 0; i < modelFaces.size(); i++) {
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glBegin(GL_POLYGON);
+			//Normal vector vector
+			vector<double> norm = normVectors[modelFaces[i].faceNormNums[0]];
+			for (int j = 0; j < modelFaces[i].faceVertexNums.size(); j++) {
+				glNormal3f(norm[0], norm[1], norm[2]);
+				//Get the vertex from the vector of vertices stored in the Model
+				//object at the corresponding index given by the indices specified
+				//in the vertex vector in the Face class
+				//Yeah that's not very intuitive sorry, but it's how I think
+				vector<double> texCoords = textureCoords[modelFaces[i].faceTexNums[j]];
+				glTexCoord2f(texCoords[0], texCoords[1]);
+				vector<double> verts =
+					modelVertices[modelFaces[i].faceVertexNums[j]];
+				glVertex3f(verts[0], verts[1], verts[2]);
+			}
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		}
+	}
+	else {
+		int colorArray[] = {
+			255, 255, 255
+		};
+		this->drawNonTextured(colorArray);
 	}
 }
 
