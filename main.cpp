@@ -52,7 +52,7 @@ CultistRig_0 *cultist_0_rig, //Gianni Cultist
 *cultist_1_rig;	//Phillip cultist
 
 //Global Model variables
-Model *ritual_altar, *tree, *leaves, *coffee_cup;
+Model *ritual_altar, *tree, *leaves, *coffee_cup, *grass_plane, *fence;
 
 // -------- DRAW FIGURES  ------------------
 void renderScene() {
@@ -124,6 +124,10 @@ void renderScene() {
 	glTranslatef(0, -0.35, -30);
 	(*ritual_altar).drawTextured();
 	glPopMatrix();
+	//Draw the grass plane
+	(*grass_plane).drawTextured();
+	//Draw the surrounding fence
+	(*fence).drawTextured();
 	glPopMatrix();
 }
 
@@ -160,6 +164,10 @@ void initializeModels() {
 	leaves = leaf1;
 	Model *mug = new Model("coffee_cup.obj", 0, 0, 0, {}, "coffee_tex.bmp");
 	coffee_cup = mug;
+	Model *grass = new Model("grass_plane.obj", 0, 0, 0, {}, "grass.bmp");
+	grass_plane = grass;
+	Model *fence1 = new Model("fence.obj", 0, 0, 0, {}, "fence.bmp");
+	fence = fence1;
 }
 
 //Animation function calls the animation function of the rigs
