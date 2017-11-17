@@ -9,14 +9,13 @@ function calls for a Polygon using the color specified as a parameter
 Texture support to come when I find a good (and not outdated) openGL
 texture tutorial
 */
-#define _CRT_SECURE_NO_WARNINGS
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <GLUT/GLUT.H>
-#include <SOIL.h>
+#include "SOIL.h"
 #include <math.h>
 
 using namespace std;

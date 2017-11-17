@@ -59,6 +59,8 @@ vector<Model> skelebones = {
 	leg_right_upper
 };
 
+Model *ritual_altar;
+
 //Rig mainRig(skelebones);
 CultistRig_0 *cultist_0_rig;
 
@@ -79,6 +81,7 @@ void renderScene() {
 	skull.drawNonTextured(colorArray);
 	mainRig.drawRig();
 	*/
+	(*ritual_altar).drawTextured();
 	glPushMatrix();
 	glTranslatef(0, 2.0, 0);
 	(*cultist_0_rig).drawRig();
@@ -102,6 +105,8 @@ void initializeModels() {
 	};
 	CultistRig_0 *cult_0Rig = new CultistRig_0(cultistVector);
 	cultist_0_rig = cult_0Rig;
+	Model *altar = new Model("ritual_altar.obj", 0, 0, 0, {});
+	ritual_altar = altar;
 }
 
 //Init function for more openGL stuff
