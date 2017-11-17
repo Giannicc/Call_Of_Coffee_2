@@ -15,7 +15,7 @@ public:
 	//as the root model!
 	vector<Model> modelParts;
 	void drawRig();
-	void recursiveDraw(deque<Model*> childModels);
+	void recursiveDraw(deque<Model*> subModels);
 	/*
 	Rig & operator=(const Rig &original) {
 		for (int i = 0; i < original.modelParts.size(); i++) {

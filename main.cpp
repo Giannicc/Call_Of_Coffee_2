@@ -1,254 +1,260 @@
-/**
-	Created by:
-	Gianni Ciccarelli and Phillip Wells
-	
-	CS300, Project 3
-	The Call of Coffee 2:
-		the Coffee Calls Back...
-**/
-#include <iostream>
-#include <math.h>
-#include <stdlib.h>
-#include <time.h>
-#ifndef M_PI
-#define M_PI 3.14159265
-#endif
-#define TAU (2 * M_PI)
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #else
 #endif
+#include <stdlib.h>
+#include <GLUT/glut.h>
+#include <math.h>
+#include <iostream>
+#include <time.h>
 #include "AnimRig.h"
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif
+
 using namespace std;
-int colorArray[] = {
-	255, 255, 255
-};
-Model arm_left_lower("arm_left_lower.obj", 0.82596, 4.21011, -0.02102, { "hand_left" });
-Model arm_left_upper("arm_left_upper.obj", 0.67702, 5.62719, -0.05725, { "arm_left_lower" });
-Model arm_right_lower("arm_right_lower.obj", -0.82596, 4.21011, -0.02102, { "hand_right" });
-Model arm_right_upper("arm_right_upper.obj", -0.67702, 5.62719, -0.05725, { "arm_right_lower" });
-Model skull("final_skull.obj", 0, 0, 0, {});
-Model foot_left("foot_left.obj", 0.27710, 0.30598, 0.06849, {});
-Model foot_right("foot_right.obj", -0.27710, 0.30598, 0.06849, {});
-Model hand_left("hand_left.obj", 0.84435, 3.34702, -0.44979, {});
-Model hand_right("hand_right.obj", -0.84435, 3.34702, -0.44979, {});
-Model leg_left_lower("leg_left_lower.obj", 0.33641, 1.78488, -0.03953, { "foot_left" });
-Model leg_left_upper("leg_left_upper.obj", 0.39565, 3.64407, -0.11636, { "leg_left_lower" });
-Model leg_right_lower("leg_right_lower.obj", -0.33641, 1.78488, -0.03953, { "foot_right" });
-Model leg_right_upper("leg_right_upper.obj", -0.39565, 3.64407, -0.11636, { "leg_right_lower" });
-Model skeleton_body("skeleton_body.obj", 0, 0, 0, {
-	"arm_left_upper",
-	"arm_right_upper",
-	"leg_left_upper",
-	"leg_right_upper"});
-vector<Model> skelebones = {
-	skeleton_body,
-	arm_left_lower,
-	arm_left_upper,
-	arm_right_lower,
-	arm_right_upper,
-	foot_left,
-	foot_right,
-	hand_left,
-	hand_right,
-	leg_left_lower,
-	leg_left_upper,
-	leg_right_lower,
-	leg_right_upper
-};
 
-Model *ritual_altar;
+// -------- ROTATION VARS --------------
+float xpos = 0, ypos = 0, zpos = 0, xdir = 0, ydir = 0, zdir = -1, angle = 0, mugState = 0, mugHeight = 0;
 
-//Rig mainRig(skelebones);
-CultistRig_0 *cultist_0_rig;
+// -------- KEYPRESS VARS --------------
+float downmove = 0.0, downangle = 0.0;
 
-//Global vars to store the angle of rotation of the model
-static GLfloat angle = 0;
-static GLfloat angle2 = 0;
+// -------- MOODY LIGHTING -------------
+GLfloat ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+GLfloat diffuse[] = { 0.5, 0.5, 0.5, 1.0 };
+GLfloat specular[] = { 0.3, 0.3, 0.3, 1.0 };
+GLfloat position[] = { 0, 0, 0 };
+/*
+Global Rig variables
+*/
+CultistRig_0 *cultist_0_rig, //Gianni Cultist
+*cultist_1_rig;	//Phillip cultist
 
-//Motion variables for the mouse rotation capability
-static int moving = 0, startx = 0, starty = 0;
+Model *ritual_altar, *tree, *leaves, *coffee_cup;
 
-void animate() {
-	(*cultist_0_rig).doAnimate();
-	glutPostRedisplay();
-}
-
+// -------- DRAW FIGURES  ------------------
 void renderScene() {
 	/* Draw the test skeleton
 	skull.drawNonTextured(colorArray);
 	mainRig.drawRig();
 	*/
-	(*ritual_altar).drawTextured();
+
 	glPushMatrix();
-	glTranslatef(0, 2.0, 0);
-	(*cultist_0_rig).drawRig();
-	glPushMatrix();
-	glTranslatef(-2, 0, 0);
+	glTranslatef(0, -2, 0);	//Moves everything onto eye-level
+	glPushMatrix();	//head-cultist, a cultist1 model
+	glTranslatef(0, 0, -36.6);
 	(*cultist_0_rig).drawRig();
 	glPopMatrix();
 	glPushMatrix();
-	glTranslatef(2, 0, 0);
-	(*cultist_0_rig).drawRig();
+	glTranslatef(5.87319, 0, -31.86742);
+	glRotatef(-72, 0, 1, 0);
+	(*cultist_1_rig).drawRig();
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-5.87319, 0, -31.86742);
+	glRotatef(72, 0, 1, 0);
+	(*cultist_1_rig).drawRig();
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-3.94876, 0, -24.74819);
+	glRotatef(72 * 2, 0, 1, 0);
+	(*cultist_1_rig).drawRig();
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(3.74876, 0, -24.74819);
+	glRotatef(-72 * 2, 0, 1, 0);
+	(*cultist_1_rig).drawRig();
+	glPopMatrix();
+	
+	/*
+	glPushMatrix();
+	glTranslatef(-2.29, 0, -41.855);
+	(*tree).drawTextured();
+	(*leaves).drawTextured();
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(12.27256, 0, -24.2);
+	(*tree).drawTextured();
+	(*leaves).drawTextured();
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-13.05, 0, -10.5);
+	(*tree).drawTextured();
+	(*leaves).drawTextured();
+	glPopMatrix();
+	*/
+	
+	if (mugHeight > 1) mugState = 1;
+	else if (mugHeight < -1) mugState = 0;
+	if (mugState == 0) {
+		mugHeight += 0.01;
+	}
+	else if (mugState == 1) {
+		mugHeight -= 0.01;
+	}
+	glPushMatrix();
+	glTranslatef(0, 2.52870 + mugHeight, -30);
+	(*coffee_cup).drawTextured();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(0, -0.35, -30);
+	(*ritual_altar).drawTextured();
 	glPopMatrix();
 	glPopMatrix();
 }
 
 void initializeModels() {
-	Model cultist_0_bottom("cultist_0_bottom.obj", 0, 0, 0, { "cultist_0_robe_top" });
-	Model cultist_0_top("cultist_0_robe_top.obj", 0, 1.49405, 0, {});
-	Model cultist_0_hands("cultist_0_hands.obj", 0, 1.13319, 0, {});
+	Model cultist_0_bottom("cultist_0_bottom.obj", 0, 0, 0, { "cultist_0_robe_top" }, "cultist_0.bmp");
+	Model cultist_0_top("cultist_0_robe_top.obj", 0, 1.49405, 0, {}, "cultist_0.bmp");
+	Model cultist_0_hands("cultist_0_hands.obj", 0, 1.13319, 0, {}, "cultist_0.bmp");
 	vector<Model> cultistVector = {
 		cultist_0_bottom, cultist_0_top, cultist_0_hands
 	};
 	CultistRig_0 *cult_0Rig = new CultistRig_0(cultistVector);
 	cultist_0_rig = cult_0Rig;
-	Model *altar = new Model("ritual_altar.obj", 0, 0, 0, {});
+
+	Model cultist_1_bottom("cultist_0_bottom.obj", 0, 0, 0, { "cultist_0_robe_top" }, "cultist_1.bmp");
+	Model cultist_1_top("cultist_0_robe_top.obj", 0, 1.49405, 0, {}, "cultist_1.bmp");
+	Model cultist_1_hands("cultist_0_hands.obj", 0, 1.13319, 0, {}, "cultist_1.bmp");
+	vector<Model> cultistVector1 = {
+		cultist_1_bottom, cultist_1_top, cultist_1_hands
+	};
+	CultistRig_0 *cult_1Rig = new CultistRig_0(cultistVector1);
+	cultist_1_rig = cult_1Rig;
+
+	Model *altar = new Model("ritual_altar.obj", 0, 0, 0, {}, "ritual_altar.bmp");
 	ritual_altar = altar;
+	Model *tree1 = new Model("tree.obj", 0, 0, 0, {}, "bark.bmp");
+	tree = tree1;
+	Model *leaf1 = new Model("leaves.obj", 0, 0, 0, {}, "leafing.bmp");
+	leaves = leaf1;
+	Model *mug = new Model("coffee_cup.obj", 0, 0, 0, {}, "coffee_tex.bmp");
+	coffee_cup = mug;
 }
 
-//Init function for more openGL stuff
-void init()
-{
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(
-		-4.0,
-		4.0,
-		0.0,
-		8.0,
-		-8.0,
-		8.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+
+// ------- OTHER CODE  ------------------
+void animate() {
+	(*cultist_0_rig).doAnimate();
+	(*cultist_1_rig).doAnimate();
+	
+	glutPostRedisplay();
+}
+
+void init() {
 	initializeModels();
-	/* Setup initial OpenGL rendering state. */
 	glEnable(GL_DEPTH_TEST);
-	//glShadeModel(GL_SMOOTH);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, ambient);
+	glShadeModel(GL_SMOOTH);
 }
 
-void display()
-{
+void camera() {
+	gluLookAt(xpos, ypos, zpos,
+		xpos + xdir, ypos + ydir, zpos + zdir,
+		0, 1, 0);
+}
+
+void setpos(float downmove) {
+	xpos += downmove * xdir;
+	ypos += downmove * ydir;
+	zpos += downmove * zdir;
+}
+
+void setangle(float downangle) {
+	angle += downangle;
+	xdir = sin(angle);
+	zdir = -cos(angle);
+}
+
+void display(void) {
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glPushMatrix();
-	glPopMatrix();
-	glPushMatrix();
-	glRotatef(angle2, 1.0, 0.0, 0.0);
-	glRotatef(angle, 0.0, 1.0, 0.0);
+	glLoadIdentity();
+	if (downmove)
+		setpos(downmove);
+	if (downangle)
+		setangle(downangle);
+	camera();
+	animate();
 	renderScene();
-	glPopMatrix();
 	glutSwapBuffers();
 }
 
-//OpenGL clear function
-void clear()
-{
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void reshape(int w, int h) {
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(
-		-4.0,
-		4.0,
-		0.0,
-		8.0,
-		-8.0,
-		8.0);
+	gluPerspective(60, (GLfloat)w / (GLfloat)h, 1.0, 1000.0);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
-//Mouse control function
-static void mouse(int button, int state, int x, int y)
-{
-	/* Rotate the scene with the left mouse button. */
-	if (button == GLUT_LEFT_BUTTON) {
-		if (state == GLUT_DOWN) {
-			moving = 1;
-			startx = x;
-			starty = y;
-		}
-		if (state == GLUT_UP) {
-			moving = 0;
-		}
-	}
-}
-
-//OpenGL keyboard input
-//	'q':  exit
-//	'r':  begin random rotation of skeleton limbs
-//	'f':  stop random rotation of skeleton limbs
 void keyboard(unsigned char key, int x, int y) {
-#pragma unused(x, y)
 	switch (key) {
 	case 'q':
 		exit(0);
 		break;
-	case 'r':
-		glutIdleFunc(animate);
-		break;
-	case 'f':
-		glutIdleFunc(NULL);
-		break;
-	default:
-		break;
-	}
-	display();
-}
-
-static void motion(int x, int y)
-{
-	if (moving) {
-		angle = (angle + (x - startx));
-		angle2 = (angle2 + (y - starty));
-		startx = x;
-		starty = y;
-		glutPostRedisplay();
 	}
 }
 
-//OpenGL reshape function
-void reshape(int w, int h) {
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	if (w <= h)
-		glOrtho(
-			-4.0,
-			4.0,
-			0.0 * (GLfloat)h / (GLfloat)w,
-			8.0 * (GLfloat)h / (GLfloat)w,
-			-8.0,
-			8.0);
-	else
-		glOrtho(
-			-4.0 * (GLfloat)w / (GLfloat)h,
-			4.0 * (GLfloat)w / (GLfloat)h,
-			0.0,
-			8.0,
-			-8.0,
-			8.0);
-	glMatrixMode(GL_MODELVIEW);
+void keyboard_down(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_LEFT:
+		downangle = -0.02f;
+		break;
+	case GLUT_KEY_RIGHT:
+		downangle = 0.02f;
+		break;
+	case GLUT_KEY_UP:
+		downmove = 0.1f;
+		break;
+	case GLUT_KEY_DOWN:
+		downmove = -0.1f;
+		break;
+	}
+}
+
+void keyboard_up(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_LEFT:
+
+	case GLUT_KEY_RIGHT:
+		downangle = 0.0f;
+		break;
+	case GLUT_KEY_UP:
+
+	case GLUT_KEY_DOWN:
+		downmove = 0.0f;
+		break;
+	}
 }
 
 int main(int argc, char **argv) {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("The Call of Coffee 2");
-
-	/* Register assorted GLUT callback routines. */
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Test");
 	init();
-	glutIdleFunc(NULL);
-	glutReshapeFunc(reshape);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glutDisplayFunc(display);
-	glutMouseFunc(mouse);
+	glutIdleFunc(display);
+	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
-	glutMotionFunc(motion);
+	glutSpecialFunc(keyboard_down);
+	glutIgnoreKeyRepeat(1);
+	glutSpecialUpFunc(keyboard_up);
 
 	glutMainLoop();
 	return 0;
