@@ -3,10 +3,12 @@ Rig Class function definitions
 */
 #include "AnimRig.h"
 Rig::Rig(vector<Model> submodels) {
-	//note to self: try passing submodels by reference and make modelParts a
-	//pointer to see if that speeds things up, cause I think making a deep copy
-	//may or may not require reading the obj files again...
 	modelParts = submodels;
+	/*
+	The names of models in a Rig are checked, and if they match
+	the name of a string in childNames then that model is passed by reference
+	to the children model pointer vector
+	*/
 	for (int i = 0; i < modelParts.size(); i++) {
 		for (int childIndex = 0; childIndex < modelParts[i].childNames.size(); childIndex++) {
 			for (int j = 0; j < modelParts.size(); j++) {
@@ -28,6 +30,7 @@ void Rig::drawRig() {
 	glRotatef(modelParts[0].rotZ, 0.0, 0.0, 1.0);
 	modelParts[0].drawTextured();
 	deque<Model*> subModels;
+	//Add the models in modelParts to the subModels deque to be drawn
 	for (int i = 1; i < modelParts.size(); i++) {
 		subModels.push_back(&modelParts[i]);
 	}
@@ -45,6 +48,11 @@ void Rig::drawRig() {
 	glPopMatrix();	//root pop
 }
 
+/*
+As it turns out a recursive function to call matrix pushes and pops is perfect!
+recursiveDraw draws every model in subModels, but if a model has children
+it pushes all those models to the front of the deque to be drawn next
+*/
 void Rig::recursiveDraw(deque<Model*> subModels) {
 	if (!subModels.empty()) {
 		int colorArray[] = {
@@ -75,22 +83,13 @@ void Rig::recursiveDraw(deque<Model*> subModels) {
 
 void CultistRig_0::doAnimate() {
 	/*
-	mmkay so what I'm thinking for this one is:
-	1) check the animation state
-	2) use switch statement to decide how to manipulate the model
-	based on animation state.
-	3) each animation state has a finishing position/rotation for the model,
-	so if the model's data equals that, move to the next animation state
-	May need to set pos/rot for the model at the beginning of each animation
-	state just to make sure they're where they should be, have to make sure to
-	do that only once though
-	4) otherwise just follow the animation instructions that move the model
-	to the desired spot every time the animate function is called
+	The animation state keeps track of whether we're raising the head (state 0)
+	or lowering the head (state 1)
+	Then based on that we actually change the rotation data of the model
 	*/
 	Model *top = NULL, *hands = NULL;
 	for (int i = 0; i < modelParts.size(); i++) {
 		if (modelParts[i].name == "cultist_0_robe_top") top = &(modelParts[i]);
-		if (modelParts[i].name == "cultist_0_hands") hands = &(modelParts[i]);
 	}
 	if ((*top).rotX > 40) animationStage = 1;
 	else if ((*top).rotX <= 1) animationStage = 0;

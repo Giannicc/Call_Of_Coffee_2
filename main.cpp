@@ -2,6 +2,25 @@
 #include <math.h>
 #include <iostream>
 #include <time.h>
+/*
+	The Call of Coffee 2:	the Coffee Calls Back...
+	Created by Gianni Ciccarelli and Phillip Wells
+		CS300, Project 3
+
+		All models were created by Gianni Ciccarelli, using Blender
+		The textures used are from royalty free Google images
+
+		This program creates an OpenGL window that displays a scene that
+		the user can navigate around using the keyboard.
+
+		CONTROLS:
+		Keyboard:
+		'Q':	Press Q to exit the program
+		'UP-ARROW':	Press the up arrow to move forwards
+		'DOWN-ARROW':	Press the down arrow to move backwards
+		'LEFT-ARROW':	Press the left arrow to pan the camera to the left
+		'RIGHT-ARROW':	Press the right arrow to pan the camera to the right
+*/
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -27,27 +46,25 @@ GLfloat ambient[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat diffuse[] = { 0.5, 0.5, 0.5, 1.0 };
 GLfloat specular[] = { 0.3, 0.3, 0.3, 1.0 };
 GLfloat position[] = { 0, 0, 0 };
-/*
-Global Rig variables
-*/
+
+//Global Rig variables
 CultistRig_0 *cultist_0_rig, //Gianni Cultist
 *cultist_1_rig;	//Phillip cultist
 
+//Global Model variables
 Model *ritual_altar, *tree, *leaves, *coffee_cup;
 
 // -------- DRAW FIGURES  ------------------
 void renderScene() {
-	/* Draw the test skeleton
-	skull.drawNonTextured(colorArray);
-	mainRig.drawRig();
-	*/
-
 	glPushMatrix();
 	glTranslatef(0, -2, 0);	//Moves everything onto eye-level
+
 	glPushMatrix();	//head-cultist, a cultist1 model
 	glTranslatef(0, 0, -36.6);
 	(*cultist_0_rig).drawRig();
 	glPopMatrix();
+
+	//Now draw several phillip cultists with proper rotation
 	glPushMatrix();
 	glTranslatef(5.87319, 0, -31.86742);
 	glRotatef(-72, 0, 1, 0);
@@ -68,7 +85,9 @@ void renderScene() {
 	glRotatef(-72 * 2, 0, 1, 0);
 	(*cultist_1_rig).drawRig();
 	glPopMatrix();
-       
+  
+	/*
+	//Tree drawing
 	glPushMatrix();
 	glTranslatef(-2.29, 0, -41.855);
 	(*tree).drawTextured();
@@ -86,19 +105,21 @@ void renderScene() {
 	glPopMatrix();
 	
 	
+	//This manages the floating mug
 	if (mugHeight > 1) mugState = 1;
 	else if (mugHeight < -1) mugState = 0;
 	if (mugState == 0) {
-		mugHeight += 0.01;
+		mugHeight += 0.05;
 	}
 	else if (mugState == 1) {
-		mugHeight -= 0.01;
+		mugHeight -= 0.05;
 	}
 	glPushMatrix();
 	glTranslatef(0, 2.52870 + mugHeight, -30);
 	(*coffee_cup).drawTextured();
 	glPopMatrix();
 
+	//Draw the ritual altar
 	glPushMatrix();
 	glTranslatef(0, -0.35, -30);
 	(*ritual_altar).drawTextured();
@@ -106,6 +127,12 @@ void renderScene() {
 	glPopMatrix();
 }
 
+/*
+This is where we actually call the functions that create the models and rigs
+used in the project, and is called in the init() function at the start of the program.
+The model initializations must be called AFTER opengl is initialized or SOIL is unable to
+properly function and the program crashes
+*/
 void initializeModels() {
 	Model cultist_0_bottom("cultist_0_bottom.obj", 0, 0, 0, { "cultist_0_robe_top" }, "cultist_0.bmp");
 	Model cultist_0_top("cultist_0_robe_top.obj", 0, 1.49405, 0, {}, "cultist_0.bmp");
@@ -135,15 +162,14 @@ void initializeModels() {
 	coffee_cup = mug;
 }
 
-
-// ------- OTHER CODE  ------------------
+//Animation function calls the animation function of the rigs
 void animate() {
 	(*cultist_0_rig).doAnimate();
-	(*cultist_1_rig).doAnimate();
-	
+	(*cultist_1_rig).doAnimate();	
 	glutPostRedisplay();
 }
 
+//Initializing opengl properties
 void init() {
 	initializeModels();
 	glEnable(GL_DEPTH_TEST);
@@ -160,12 +186,14 @@ void init() {
 	glShadeModel(GL_SMOOTH);
 }
 
+/*
+These functions handle the "movement" of the camera
+*/
 void camera() {
 	gluLookAt(xpos, ypos, zpos,
 		xpos + xdir, ypos + ydir, zpos + zdir,
 		0, 1, 0);
 }
-
 void setpos(float downmove) {
     xpos += downmove * xdir;
     cout << "xpos" << xpos << endl;
@@ -187,13 +215,13 @@ void setpos(float downmove) {
     }
 }
 
-
 void setangle(float downangle) {
 	angle += downangle;
 	xdir = sin(angle);
 	zdir = -cos(angle);
 }
 
+//Opengl display function
 void display(void) {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -208,6 +236,8 @@ void display(void) {
 	glutSwapBuffers();
 }
 
+
+//Opengl reshape function
 void reshape(int w, int h) {
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 	glMatrixMode(GL_PROJECTION);
@@ -216,6 +246,10 @@ void reshape(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
+/*Opengl keyboard function
+CONTROLS:
+	'Q':  exit the program
+*/
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
     case 'q':
@@ -230,6 +264,13 @@ void keyboard(unsigned char key, int x, int y) {
     }
 }
 
+/*
+More keyboard handling, CONTROLS:
+	Down arrow:  Move backwards
+	Up arrow:  Move forwards
+	Left arrow:  Pan camera left
+	Right arrow:  Pan camera right
+*/
 void keyboard_down(int key, int x, int y) {
 	switch (key) {
 	case GLUT_KEY_LEFT:
@@ -246,7 +287,6 @@ void keyboard_down(int key, int x, int y) {
 		break;
 	}
 }
-
 void keyboard_up(int key, int x, int y) {
 	switch (key) {
 	case GLUT_KEY_LEFT:
