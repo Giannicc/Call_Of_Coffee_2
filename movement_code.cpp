@@ -17,10 +17,16 @@ float xpos = 0, ypos = 0, zpos = 0, xdir = 0, ydir = 0, zdir = -1, angle = 0;
 // -------- KEYPRESS VARS --------------
 float downmove = 0.0, downangle = 0.0;
 
+// -------- MOODY LIGHTING -------------
+GLfloat ambient[] = {0.0, 0.0, 0.0, 1.0};
+GLfloat diffuse[] = {0.3, 0.3, 0.3, 1.0};
+GLfloat specular[] = {0.3, 0.3, 0.3, 1.0};
+GLfloat position[] = {0, 0, 1};
+
 // -------- DELETE ME ------------------
 void drawSnowMan() {
 
-	glColor3f(1.0f, 1.0f, 1.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
 
 // Draw Body
 	glTranslatef(0.0f ,0.75f, 0.0f);
@@ -70,6 +76,14 @@ void init () {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_POSITION, position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, ambient);
     glShadeModel(GL_SMOOTH);
 }
 
