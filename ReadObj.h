@@ -6,8 +6,8 @@ data found in the .obj file specified in the constructor parameter.
 Call <this>.drawNonTextured(colorArray) to draw the model with OpenGL
 function calls for a Polygon using the color specified as a parameter
 
-Texture support to come when I find a good (and not outdated) openGL
-texture tutorial
+Call <this>.drawTextured() to draw the model with the texture specified
+by textureFileName
 */
 #include <vector>
 #include <fstream>
@@ -40,8 +40,9 @@ class Model {
 public:
 	/*
 	Construct a Model object using the data provided in the .obj file passed
-	as a string containing its full name, and the x/y/z coordinates
-	of its pivot point
+	as a string containing its full name, the x/y/z coordinates
+	of its pivot point, a vector of the names of all its submodels, and
+	the name of its texture file
 	*/
 	Model(string objSource, 
 		float _x, float _y, float _z,
@@ -52,32 +53,24 @@ public:
 	RGB order (colorArray[0] for red, [1] for blue, [2] for green)
 	*/
 	void drawNonTextured(int colorArray[3]);
+
+	//Uses openGL to draw the model with the texture from the texture file
+	//specified by textureFileName
 	void drawTextured();
+	//Set whether or not we want to draw normal vector lines coming off the
+	//model faces, useful for  making sure the model's normals are loaded right
 	void doNorms(bool veracity);
+	//Changes model rotation data
 	void rotateModel(float x, float y, float z);
+	//Changes model position data
 	void moveModel(float x, float y, float z);
-	Model & operator=(const Model &original) {
-		name = original.name;
-		textureFileName = original.textureFileName;
-		childNames = original.childNames;
-		children = original.children;
-		modelFaces = original.modelFaces;
-		modelVertices = original.modelVertices;
-		normVectors = original.normVectors;
-		textureCoords = original.textureCoords;
-		pivotX = original.pivotX;
-		pivotY = original.pivotY;
-		pivotZ = original.pivotZ;
-		x = original.x;
-		y = original.y;
-		z = original.z;
-		rotX = original.rotX;
-		rotY = original.rotY;
-		rotZ = original.rotZ;
-		textureID = original.textureID;
-		return *this;
-	}
 	string name, textureFileName;
+	
+	/*
+	The names of models in a Rig are checked, and if they match
+	the name of a string in childNames that model is passed by reference
+	to the children model pointer vector
+	*/
 	vector<string> childNames;
 	vector<Model *> children;
 	vector<Face> modelFaces;
