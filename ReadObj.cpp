@@ -2,9 +2,15 @@
 /**
 Model class functions
 **/
+/*
+Model object constructor,
+creates a Model with the given parameters
+*/
 Model::Model(string objSource, 
 	float _x, float _y, float _z, 
 	vector<string> children, string texName) {
+
+	//Set data for the model
 	childNames = children;
 	name = objSource.substr(0, objSource.length() - 4);
 	textureFileName = texName;
@@ -13,6 +19,10 @@ Model::Model(string objSource,
 	pivotY = _y;
 	pivotZ = _z;
 	drawNormals = false;
+
+	/*
+	Start reading from the file specified by objSource
+	*/
 	ifstream source;
 	source.open(objSource, ios::in);
 	if (source.is_open()) {
@@ -108,11 +118,12 @@ Model::Model(string objSource,
 			printf("SOIL loading error: '%s'\n", SOIL_last_result());
 		}
 		else {
-			cout << "o yea ah loaded properly an all" << endl;
+			cout << "Successfully loaded texture for " << name << endl;
 		}
 	}
 }
 
+//Draw the model as polygons with the solid color specified in the colorArray parameter
 void Model::drawNonTextured(int colorArray[3]) {
 	for (int i = 0; i < modelFaces.size(); i++) {
 		glBegin(GL_POLYGON);
@@ -132,7 +143,6 @@ void Model::drawNonTextured(int colorArray[3]) {
 			//Get the vertex from the vector of vertices stored in the Model
 			//object at the corresponding index given by the indices specified
 			//in the vertex vector in the Face class
-			//Yeah that's not very intuitive sorry, but it's how I think
 			vector<double> verts =
 				modelVertices[modelFaces[i].faceVertexNums[j]];
 			glVertex3f(verts[0], verts[1], verts[2]);
@@ -156,6 +166,7 @@ void Model::drawNonTextured(int colorArray[3]) {
 	}
 }
 
+//Draw the model by using openGL texture calls
 void Model::drawTextured() {
 	if (!textureCoords.empty()){
 		for (int i = 0; i < modelFaces.size(); i++) {
@@ -171,8 +182,8 @@ void Model::drawTextured() {
 				//Get the vertex from the vector of vertices stored in the Model
 				//object at the corresponding index given by the indices specified
 				//in the vertex vector in the Face class
-				//Yeah that's not very intuitive sorry, but it's how I think
 				vector<double> texCoords = textureCoords[modelFaces[i].faceTexNums[j]];
+				//Implement the texture coordinates
 				glTexCoord2f(texCoords[0], texCoords[1]);
 				vector<double> verts =
 					modelVertices[modelFaces[i].faceVertexNums[j]];
@@ -182,6 +193,7 @@ void Model::drawTextured() {
 			glDisable(GL_TEXTURE_2D);
 		}
 	}
+	//If the model didn't have texture data we will just draw it as a plain white polygon
 	else {
 		int colorArray[] = {
 			255, 255, 255
@@ -196,12 +208,14 @@ void Model::doNorms(bool veracity) {
 	drawNormals = veracity;
 }
 
+//Changes model rotation data
 void Model::rotateModel(float x, float y, float z) {
 	rotX = x;
 	rotY = y;
 	rotZ = z;
 }
 
+//Changes model position data
 void Model::moveModel(float _x, float _y, float _z) {
 	x += _x;
 	y += _y;
