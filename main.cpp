@@ -1,14 +1,14 @@
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
-#else
-#endif
 #include <stdlib.h>
-#include <GLUT/glut.h>
 #include <math.h>
 #include <iostream>
 #include <time.h>
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 #include "AnimRig.h"
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -68,8 +68,7 @@ void renderScene() {
 	glRotatef(-72 * 2, 0, 1, 0);
 	(*cultist_1_rig).drawRig();
 	glPopMatrix();
-	
-	/*
+       
 	glPushMatrix();
 	glTranslatef(-2.29, 0, -41.855);
 	(*tree).drawTextured();
@@ -85,7 +84,7 @@ void renderScene() {
 	(*tree).drawTextured();
 	(*leaves).drawTextured();
 	glPopMatrix();
-	*/
+	
 	
 	if (mugHeight > 1) mugState = 1;
 	else if (mugHeight < -1) mugState = 0;
@@ -168,10 +167,26 @@ void camera() {
 }
 
 void setpos(float downmove) {
-	xpos += downmove * xdir;
-	ypos += downmove * ydir;
-	zpos += downmove * zdir;
+    xpos += downmove * xdir;
+    cout << "xpos" << xpos << endl;
+    if (xpos > 5)
+	xpos = 4.9;
+    if (xpos < -5)
+	xpos = -4.9;
+    ypos += downmove * ydir;
+    if (ypos > 5)
+	ypos = 4.9;
+    if (ypos < -5)
+	ypos = -4.9;
+    zpos += downmove * zdir;
+    cout << "zpos: " << zpos << endl;
+    if (zpos > 40)
+	zpos = 39.9;
+    if (zpos < -24.3) {
+	zpos = -24.2;
+    }
 }
+
 
 void setangle(float downangle) {
 	angle += downangle;
@@ -202,11 +217,17 @@ void reshape(int w, int h) {
 }
 
 void keyboard(unsigned char key, int x, int y) {
-	switch (key) {
-	case 'q':
-		exit(0);
-		break;
-	}
+    switch (key) {
+    case 'q':
+	exit(0);
+	break;
+    case 'r':
+	xpos = ypos = zpos = 0;
+        xdir = ydir = 0;
+	zdir = -1;
+	angle = 0;
+	break;
+    }
 }
 
 void keyboard_down(int key, int x, int y) {
