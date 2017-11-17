@@ -4,10 +4,10 @@ Model class functions
 **/
 Model::Model(string objSource, 
 	float _x, float _y, float _z, 
-	vector<string> children) {
+	vector<string> children, string texName) {
 	childNames = children;
 	name = objSource.substr(0, objSource.length() - 4);
-	textureFileName = name + ".bmp";
+	textureFileName = texName;
 	rotX = rotY = rotZ = 0;
 	pivotX = _x;
 	pivotY = _y;

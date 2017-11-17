@@ -45,7 +45,8 @@ public:
 	*/
 	Model(string objSource, 
 		float _x, float _y, float _z,
-		vector<string> children);
+		vector<string> children,
+		string texName);
 	/*
 	Pass an array with 3 integers from 0 to 255 to specify the color in
 	RGB order (colorArray[0] for red, [1] for blue, [2] for green)
